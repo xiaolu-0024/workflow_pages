@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="🍔汉堡打卡">
+    
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23fef7e9'/><text x='50' y='72' font-size='64' text-anchor='middle'>🍔</text></svg>">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #fef7e9;
+            font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 12px;
+        }
+
+        .container {
+            max-width: 420px;
+            width: 100%;
+            background: #fffaf0;
+            border-radius: 40px 40px 30px 30px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+            padding: 28px 20px 36px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: "🐾";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            opacity: 0.2;
+            transform: rotate(15deg);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #5e3c1f;
+            letter-spacing: 1px;
+        }
+
+        .header .sub {
+            font-size: 14px;
+            color: #b08a6b;
+            margin-top: 4px;
+            font-weight: 500;
+            background: #f0e4d5;
+            display: inline-block;
+            padding: 2px 16px;
+            border-radius: 20px;
+        }
+
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .step-item {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+            border-left: 6px solid #d9c2a7;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .step-item:nth-child(1) { border-left-color: #b87c4b; }
+        .step-item:nth-child(2) { border-left-color: #7cb342; }
+        .step-item:nth-child(3) { border-left-color: #8d6e3f; }
+        .step-item:nth-child(4) { border-left-color: #f9d71c; }
+        .step-item:nth-child(5) { border-left-color: #d4a373; }
+
+        .step-icon {
+            font-size: 28px;
+            line-height: 1;
+            width: 40px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #3d2a19;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .step-title .time {
+            font-size: 13px;
+            font-weight: 400;
+            color: #a07d5c;
+            background: #f5ede4;
+            padding: 0 10px;
+            border-radius: 12px;
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: #6b4f34;
+            margin-top: 2px;
+            opacity: 0.85;
+        }
+
+        .step-item.done {
+            background: #f0f7ee;
+            border-left-color: #5b8c4e !important;
+            opacity: 0.8;
+        }
+
+        .step-item.done .step-title {
+            text-decoration: line-through;
+            color: #7a9f6a;
+        }
+
+        .step-item.done .step-desc {
+            text-decoration: line-through;
+            color: #9ab88a;
+        }
+
+        .step-item.done .check-mark {
+            display: inline-block;
+        }
+
+        .check-mark {
+            display: none;
+            font-size: 22px;
+            color: #4caf50;
+            margin-left: auto;
+            flex-shrink: 0;
+            background: #e6f4e0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 36px;
+        }
+
+        .arrow-connector {
+            text-align: center;
+            font-size: 20px;
+            color: #d4b48c;
+            margin: -4px 0;
+            opacity: 0.6;
+            letter-spacing: 2px;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 16px;
+            border-top: 2px dashed #e6d6c2;
+        }
+
+        .progress-text {
+            font-size: 15px;
+            color: #7a5f44;
+            font-weight: 500;
+        }
+
+        .reset-btn {
+            background: #efe3d5;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 14px;
+            color: #5e3c1f;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .reset-btn:active {
+            transform: scale(0.95);
+            background: #e0cfbc;
+        }
+
+        .celebrate {
+            display: none;
+            text-align: center;
+            margin-top: 16px;
+            padding: 12px;
+            background: #ffefd2;
+            border-radius: 30px;
+            font-size: 18px;
+            color: #b8682c;
+            font-weight: 600;
+            animation: bounce 1s infinite alternate;
+        }
+
+        .celebrate.show {
+            display: block;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-6px); }
+        }
+
+        .tip {
+            text-align: center;
+            font-size: 12px;
+            color: #c4ab92;
+            margin-top: 16px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <div class="header">
+            <h1>🍔 汉堡包流程图</h1>
+            <div class="sub">👧 5岁女儿的逻辑启蒙</div>
+        </div>
+
+        <div class="step-list" id="stepList">
+            <div class="step-item" data-step="1">
+                <div class="step-icon">🍞</div>
+                <div class="step-content">
+                    <div class="step-title">
+                        底部面包
+                        <span class="time">7:30</span>
+                    </div>
+                    <div class="step-desc">⏰ 闹钟响，起床</div>
+                </div>
+                <div class="check-mark">✅</div>
+            </div>
+            <div class="arrow-connector">⬇️</div>
+
+            <div class="step-item" data-step="2">
+                <div class="step-icon">🥬</div>
+                <div class="step-content">
+                    <div class="step-title">
+                        生菜
+                        <span class="time">7:35</span>
+                    </div>
+                    <div class="step-desc">🚽 先上厕所 + 💧 喝半杯温水</div>
+                </div>
+                <div class="check-mark">✅</div>
+            </div>
+            <div class="arrow-connector">⬇️</div>
+
+            <div class="step-item" data-step="3">
+                <div class="step-icon">🥩</div>
+                <div class="step-content">
+                    <div class="step-title">
+                        肉饼
+                        <span class="time">7:40</span>
+                    </div>
+                    <div class="step-desc">👕 自己穿好园服</div>
+                </div>
+                <div class="check-mark">✅</div>
+            </div>
+            <div class="arrow-connector">⬇️</div>
+
+            <div class="step-item" data-step="4">
+                <div class="step-icon">🧀</div>
+                <div class="step-content">
+                    <div class="step-title">
+                        奶酪
+                        <span class="time">7:45</span>
+                    </div>
+                    <div class="step-desc">🪥 刷牙洗脸（限时3分钟）</div>
+                </div>
+                <div class="check-mark">✅</div>
+            </div>
+            <div class="arrow-connector">⬇️</div>
+
+            <div class="step-item" data-step="5">
+                <div class="step-icon">🍔</div>
+                <div class="step-content">
+                    <div class="step-title">
+                        顶部面包
+                        <span class="time">8:00</span>
+                    </div>
+                    <div class="step-desc">🍳 准时开饭！完成全部 🎉</div>
+                </div>
+                <div class="check-mark">✅</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span class="progress-text" id="progressText">已完成：0 / 5</span>
+            <button class="reset-btn" id="resetBtn">🔄 重新开始</button>
+        </div>
+
+        <div class="celebrate" id="celebrateBox">
+            🎈🎉 太棒啦！汉堡叠好啦！ 🎉🎈
+        </div>
+
+        <div class="tip">👆 点击每一步，完成打卡！自动保存进度 💾</div>
+    </div>
+
+    <script>
+        (function() {
+            const items = document.querySelectorAll('.step-item');
+            const progressText = document.getElementById('progressText');
+            const celebrateBox = document.getElementById('celebrateBox');
+            const resetBtn = document.getElementById('resetBtn');
+
+            // ========== 保存进度到 localStorage ==========
+            function saveProgress() {
+                const doneSteps = [];
+                document.querySelectorAll('.step-item.done').forEach(el => {
+                    doneSteps.push(el.dataset.step);
+                });
+                localStorage.setItem('burgerProgress', JSON.stringify(doneSteps));
+            }
+
+            // ========== 从 localStorage 恢复进度 ==========
+            function loadProgress() {
+                const saved = localStorage.getItem('burgerProgress');
+                if (saved) {
+                    try {
+                        const doneSteps = JSON.parse(saved);
+                        doneSteps.forEach(step => {
+                            const el = document.querySelector(`.step-item[data-step="${step}"]`);
+                            if (el) el.classList.add('done');
+                        });
+                    } catch (e) {
+                        // 数据损坏则忽略
+                    }
+                }
+                updateProgress();
+            }
+
+            // ========== 更新进度显示和彩蛋 ==========
+            function updateProgress() {
+                const doneCount = document.querySelectorAll('.step-item.done').length;
+                const total = items.length;
+                progressText.textContent = `已完成：${doneCount} / ${total}`;
+
+                if (doneCount === total) {
+                    celebrateBox.classList.add('show');
+                } else {
+                    celebrateBox.classList.remove('show');
+                }
+            }
+
+            // ========== 切换步骤状态 ==========
+            function toggleStep(stepEl) {
+                stepEl.classList.toggle('done');
+                updateProgress();
+                saveProgress(); // 每次变化都保存
+            }
+
+            // ========== 绑定点击事件 ==========
+            items.forEach(item => {
+                item.addEventListener('click', function() {
+                    toggleStep(this);
+                });
+            });
+
+            // ========== 重置 ==========
+            resetBtn.addEventListener('click', function() {
+                items.forEach(item => {
+                    item.classList.remove('done');
+                });
+                updateProgress();
+                saveProgress(); // 重置后保存空状态
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // ========== 加载已保存的进度 ==========
+            loadProgress();
+        })();
+    </script>
+</body>
+</html>
